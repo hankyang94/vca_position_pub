@@ -11,9 +11,11 @@ from vca_position_pub.msg import vcaPosition
 teensy = serial.Serial('/dev/ttyUSB0', 230400)
 
 pub = rospy.Publisher('/vcaPosition', vcaPosition, queue_size=10)
+pub_plot = rospy.Publisher('/vcaPlot', Int32, queue_size=10)
 rospy.init_node('vca_position_pub', anonymous = True)
 #~ r = rospy.Rate(2000)
 msg = vcaPosition()
+msg_plot = Int32()
 voltageScale = 5.0/2**16
 
 
@@ -25,6 +27,8 @@ while not rospy.is_shutdown():
         msg.header.stamp = rospy.Time.now()
         msg.bit = int(rawRead)
         msg.voltage = int(rawRead) * voltageScale
+        msg_plot.data = msg.bit
         print msg.voltage
         pub.publish(msg)
+        pub_plot.publish(msg_plot)
         #~ r.sleep()
